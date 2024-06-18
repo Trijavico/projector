@@ -24,28 +24,6 @@ type Config struct{
 func getConfig(opts *Opts) string{
 	return path.Join(opts.ConfigPATH, "projector", "projector.json")
     
-    /*
-	configDir := filepath.Dir(config)
-
-	err := os.MkdirAll(configDir, 0755)
-	if err != nil {
-		return err
-	}
-	data := Data{
-		Projector: map[string]map[string]string{
-			getPWD(): {
-				opts.Args[1]: opts.Args[2],
-			},
-		},
-	}
-
-	jsonData, err := json.Marshal(data)
-
-	err = os.WriteFile(config, jsonData, 0644)
-	if err != nil {
-		return err
-	}
-    */
 }
 
 func getArgs(opts *Opts) ([]string, error){

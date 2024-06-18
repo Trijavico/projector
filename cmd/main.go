@@ -1,16 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/Trijavico/projector/pkg/projector"
 )
 
 
-type Data struct {
-	Projector map[string]map[string]string `json:"projector"`
-}
 
 func main() {
 	opts, err := projector.GetOpts()
@@ -19,12 +15,25 @@ func main() {
         return 
 	}
 
-    cliConfig, err := projector.NewConfig(opts)
+    config, err := projector.NewConfig(opts)
     if err != nil {
         log.Fatalf("Error: %v", err)
     }
 
-	fmt.Printf("%+v\n", cliConfig)
+    proj, err := projector.NewProjector(config)
+    if err != nil{
+        log.Fatalf("Error: %v", err)
+    }
 
+    if proj.Config.Operation == projector.PRINT{
+    }
+
+    if proj.Config.Operation == projector.ADD{
+        proj.SetValue()
+    }
+
+    if proj.Config.Operation == projector.REMOVE{
+        proj.Remove()
+    }
 }
 
