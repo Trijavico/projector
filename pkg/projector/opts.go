@@ -15,6 +15,7 @@ type Opts struct{
 func GetOpts() (*Opts, error){
     parser := argparse.NewParser("projector", "gets all values", &argparse.ParserConfig{
         DisableDefaultShowHelp: true,
+        DisableHelp: true,
     })
 
     args := parser.Strings("a", "args", &argparse.Option{

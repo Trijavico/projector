@@ -47,9 +47,11 @@ func main() {
 
     case projector.ADD:
         proj.SetValue(config.Args[0], config.Args[1])
+        proj.Save()
 
     case projector.REMOVE:
         proj.Remove(config.Args[0])
+        proj.Save()
     }
 }
 

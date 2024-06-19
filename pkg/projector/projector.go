@@ -3,6 +3,7 @@ package projector
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 )
@@ -46,7 +47,7 @@ func NewProjector(confing *Config) (*Projector, error){
 
 
 
-func (p *Projector) save() error{
+func (p *Projector) Save() error{
 	configDir := filepath.Dir(p.Config.ConfigPATH)
     
     if _, err := os.Stat(configDir); os.IsNotExist(err){
@@ -78,7 +79,7 @@ func (p *Projector) GetAllValues() (string, error){
        paths = append(paths, currDir)
        currDir = filepath.Dir(currDir)
 
-       if currDir != prevDir{
+       if currDir == prevDir{
            break
        }
     }
@@ -88,9 +89,9 @@ func (p *Projector) GetAllValues() (string, error){
 
     for i := start; i >= 0; i--{
         if p.Data.Projector[paths[i]] != nil{
-            data = p.Data.Projector[paths[i]]
+            maps.Copy(data, p.Data.Projector[paths[i]])
         }
-    }
+   }
 
     jsonData, err := json.Marshal(data)
     if err != nil{
@@ -125,11 +126,6 @@ func (p *Projector) SetValue(key, val string) error{
 
     p.Data.Projector[p.Config.PWD][key] = val
 
-    err := p.save()
-    if err != nil {
-        return err
-    }
-
     return nil
 }
 
@@ -139,11 +135,7 @@ func (p *Projector) Remove(key string) error{
     if dir != nil {
         delete(dir, key)
     }
-
-    err := p.save()
-    if err != nil {
-        return err
-    }
     
     return nil
 }
+

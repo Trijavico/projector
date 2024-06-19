@@ -45,10 +45,9 @@ func getArgs(opts *Opts) ([]string, error){
         return opts.Args[1:], nil
     }
 
-    if operation == REMOVE{
-        if len(opts.Args) != 2{
-            return nil, fmt.Errorf("expected 1 argument, but received %v", len(opts.Args) - 1)
-        }
+    // Checks for REMOVE command
+    if len(opts.Args) != 2{
+        return nil, fmt.Errorf("expected 1 argument, but received %v", len(opts.Args) - 1)
     }
 
     return opts.Args[1:], nil
@@ -73,7 +72,7 @@ func getOperation(opts *Opts) Operation {
 		return PRINT
 	case "add":
 		return ADD
-	case "remove":
+	case "rm":
 		return REMOVE
 	}
 
