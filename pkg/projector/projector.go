@@ -2,6 +2,7 @@ package projector
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -44,23 +45,6 @@ func NewProjector(confing *Config) (*Projector, error){
 }
 
 
-func (p *Projector) SetValue() error{
-    key := p.Config.Args[0]
-    val := p.Config.Args[1]
-
-    if p.Data.Projector[p.Config.PWD] == nil {
-        p.Data.Projector[p.Config.PWD] = make(map[string]string)
-    }
-
-    p.Data.Projector[p.Config.PWD][key] = val
-
-    err := p.save()
-    if err != nil {
-        return err
-    }
-
-    return nil
-}
 
 func (p *Projector) save() error{
 	configDir := filepath.Dir(p.Config.ConfigPATH)
@@ -79,13 +63,81 @@ func (p *Projector) save() error{
 		return err
 	}
 
+    fmt.Printf("Saving data: %s\n", string(jsonData))
+
     return nil
 }
 
-func (p *Projector) Remove() error{
+func (p *Projector) GetAllValues() (string, error){
+    prevDir := ""
+    currDir := p.Config.PWD 
+    paths := make([]string, 0)
+
+    for {
+       prevDir = currDir
+       paths = append(paths, currDir)
+       currDir = filepath.Dir(currDir)
+
+       if currDir != prevDir{
+           break
+       }
+    }
+
+    data := make(map[string]string)
+    start := len(paths) - 1
+
+    for i := start; i >= 0; i--{
+        if p.Data.Projector[paths[i]] != nil{
+            data = p.Data.Projector[paths[i]]
+        }
+    }
+
+    jsonData, err := json.Marshal(data)
+    if err != nil{
+        return "", err
+    }
+
+    return string(jsonData), nil
+}
+
+func (p *Projector) GetValue(key string) string {
+    prevDir := ""
+    currDir := p.Config.PWD 
+    value := p.Data.Projector[currDir][key]
+
+    for currDir != prevDir{
+       value = p.Data.Projector[currDir][key] 
+       if value != ""{
+           break
+       }
+
+       prevDir = currDir
+       currDir = filepath.Dir(currDir)
+    }
+
+    return value 
+}
+
+func (p *Projector) SetValue(key, val string) error{
+    if p.Data.Projector[p.Config.PWD] == nil {
+        p.Data.Projector[p.Config.PWD] = make(map[string]string)
+    }
+
+    p.Data.Projector[p.Config.PWD][key] = val
+
+    err := p.save()
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+
+func (p *Projector) Remove(key string) error{
     dir := p.Data.Projector[p.Config.PWD]
     if dir != nil {
-        delete(dir, p.Config.Args[0])
+        delete(dir, key)
     }
 
     err := p.save()
